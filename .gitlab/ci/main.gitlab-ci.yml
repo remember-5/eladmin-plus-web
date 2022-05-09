@@ -1,0 +1,14 @@
+# =========== 生产 ===========
+prod_build:
+  stage: build
+  script:
+    - echo "Building the app"
+    - pwd
+    - yarn install
+    - yarn run build:prod
+    - rm -rf /server/eladmin/page/*
+    - cp -r dist/* /server/eladmin/page/
+  only:
+    - main
+  # tags:
+  #   - xxxx

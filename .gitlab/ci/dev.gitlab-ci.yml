@@ -1,0 +1,14 @@
+# =========== 开发 ===========
+dev_build:
+  stage: build
+  script:
+    - echo "Building the app"
+    #  - pwd
+    #  - yarn install
+    #  - yarn run build:prod
+    #  - rm -rf /server/eladmin/page/*
+    #  - cp -r dist/* /server/eladmin/page/
+  only:
+    - dev
+  # tags:
+  #   - xxxx

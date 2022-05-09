@@ -1,0 +1,11 @@
+# =========== 测试 ===========
+test_build:
+  stage: build
+  script:
+    - echo "Building the app"
+  only:
+    - test
+  # tags:
+  #   - xxxx
+
+
