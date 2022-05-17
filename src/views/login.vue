@@ -33,11 +33,11 @@
       </el-form-item>
     </el-form>
     <!--  底部  -->
-    <div v-if="$store.state.settings.showFooter" id="el-login-footer">
-      <span v-html="$store.state.settings.footerTxt" />
-      <span> ⋅ </span>
-      <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">{{ $store.state.settings.caseNumber }}</a>
-    </div>
+    <!--    <div v-if="$store.state.settings.showFooter" id="el-login-footer">-->
+    <!--      <span v-html="$store.state.settings.footerTxt" />-->
+    <!--      <span> ⋅ </span>-->
+    <!--      <a href="https://beian.miit.gov.cn/#/Integrated/index" target="_blank">{{ $store.state.settings.caseNumber }}</a>-->
+    <!--    </div>-->
   </div>
 </template>
 
@@ -162,10 +162,11 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
   .login {
     display: flex;
-    justify-content: center;
+    justify-content: right;
     align-items: center;
     height: 100%;
     background-size: cover;
+    padding-right: 150px;
   }
   .title {
     margin: 0 auto 30px auto;
