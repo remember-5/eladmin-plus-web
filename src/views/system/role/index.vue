@@ -173,8 +173,9 @@ export default {
       this.$refs.menu.setCheckedKeys([])
     },
     // 新增前初始化部门信息
-    [CRUD.HOOK.beforeToAdd]() {
+    [CRUD.HOOK.beforeToAdd](crud, form) {
       this.deptDatas = []
+      form.menus = null
     },
     // 编辑前初始化自定义数据权限的部门信息
     [CRUD.HOOK.beforeToEdit](crud, form) {
@@ -186,6 +187,8 @@ export default {
       form.depts.forEach(function(dept) {
         _this.deptDatas.push(dept.id)
       })
+      // 将角色的菜单清空，避免日志入库数据过长
+      form.menus = null
     },
     // 提交前做的操作
     [CRUD.HOOK.afterValidateCU](crud) {
