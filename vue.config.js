@@ -86,23 +86,6 @@ module.exports = {
       })
       .end()
 
-    // set preserveWhitespace
-    config.module
-      .rule('vue')
-      .use('vue-loader')
-      .loader('vue-loader')
-      .tap(options => {
-        options.compilerOptions.preserveWhitespace = true
-        return options
-      })
-      .end()
-
-    config
-      // https://webpack.js.org/configuration/devtool/#development
-      .when(process.env.NODE_ENV === 'development',
-        config => config.devtool('cheap-source-map')
-      )
-
     config
       .when(process.env.NODE_ENV !== 'development',
         config => {

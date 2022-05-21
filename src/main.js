@@ -21,7 +21,7 @@ import './assets/styles/index.scss'
 
 // 代码高亮
 import VueHighlightJS from 'vue-highlightjs'
-import 'highlight.js/styles/atom-one-dark.css'
+import '@/assets/styles/atom-one-dark.scss'
 
 import App from './App'
 import store from './store'
