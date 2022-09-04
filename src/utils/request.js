@@ -29,7 +29,17 @@ service.interceptors.request.use(
 // response 拦截器
 service.interceptors.response.use(
   response => {
-    return response.data
+    if (response.data.code) {
+      if (response.data.code !== '00000') {
+        Notification.error({
+          title: response.data.message,
+          duration: 5000
+        })
+        return
+      }
+    } else {
+      return response.data
+    }
   },
   error => {
     // 兼容blob下载出错json提示
