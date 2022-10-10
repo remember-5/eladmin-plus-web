@@ -4,8 +4,9 @@ prod_build:
   script:
     - echo "Building the app"
     - pwd
-    - yarn install
-    - yarn run build:prod
+    - npm config set registry https://registry.npmmirror.com
+    - npm i
+    - npm run build:prod
     - rm -rf /server/eladmin/page/*
     - cp -r dist/* /server/eladmin/page/
   only:
