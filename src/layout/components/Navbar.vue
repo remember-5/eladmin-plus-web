@@ -165,12 +165,14 @@ export default {
       })
     },
     initWebSocket() {
-      const wsUri = process.env.VUE_APP_WS_API + '/ws'
-      this.websock = new WebSocket(wsUri)
-      this.websock.onerror = this.webSocketOnError
-      this.websock.onmessage = this.webSocketOnMessage
-      this.websock.onopen = this.webSocketOnOpen
-      this.websock.onclose = this.webSocketOnClose
+      if (process.env.ENABLE_WEBSOCKET) {
+        const wsUri = process.env.VUE_APP_WS_API + '/ws'
+        this.websock = new WebSocket(wsUri)
+        this.websock.onerror = this.webSocketOnError
+        this.websock.onmessage = this.webSocketOnMessage
+        this.websock.onopen = this.webSocketOnOpen
+        this.websock.onclose = this.webSocketOnClose
+      }
     },
     webSocketOnError(e) {
       this.$notify({
