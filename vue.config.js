@@ -13,7 +13,7 @@ const port = 8013 // 端口配置
 module.exports = {
   // hash 模式下可使用
   // publicPath: process.env.NODE_ENV === 'development' ? '/' : './',
-  publicPath: '/',
+  publicPath: process.env.VUE_APP_PUBLIC_PATH === '' ? '/' : process.env.VUE_APP_PUBLIC_PATH,
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: process.env.NODE_ENV === 'development',
