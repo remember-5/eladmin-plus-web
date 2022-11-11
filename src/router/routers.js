@@ -63,6 +63,7 @@ export const constantRouterMap = [
 export default new Router({
   // mode: 'hash',
   mode: 'history',
+  base: process.env.VUE_APP_PUBLIC_PATH,
   scrollBehavior: () => ({ y: 0 }),
   routes: constantRouterMap
 })
