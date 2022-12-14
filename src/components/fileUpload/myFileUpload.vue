@@ -8,16 +8,15 @@
     :before-remove="beforeRemoveFile"
     :on-exceed="handleExceedFile"
     :headers="headers"
-    :limit="maxsize"
-    :on-change="handleChange"
-    :file-list="files"
+    :limit="fileLength"
+    :file-list="myFiles"
     drag
     :list-type="listType"
     :action="this.$baseUrl+'/uploadFile/upload'"
   >
     <i class="el-icon-upload" />
     <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
-    <div slot="tip" class="el-upload__tip">只能上传1个文件，且不超过{{ maxsize }}MB</div>
+    <div slot="tip" class="el-upload__tip">只能上传1个文件，且不超过{{ maxSize }}MB</div>
   </el-upload>
 </template>
 
@@ -26,55 +25,31 @@ import { getToken } from '@/utils/auth'
 export default {
   name: 'MyFileUpload',
   props: {
-    upList: null,
-    maxsize: {
+    maxSize: {
+      type: Number,
+      default: 1
+    },
+    fileLength: {
       type: Number,
       default: 1
     },
     listType: {
       type: String,
-      default: ''
-    },
-    files: {
-      type: Array,
-      // eslint-disable-next-line vue/require-valid-default-prop
-      default: []
-    },
-    form: null,
-    formItemName: null
+      default: 'text'
+    }
   },
   data() {
     return {
       headers: { 'Authorization': getToken() },
-      myFiles: [],
-      myFileInfos: [],
-      mapFileInfoMaps: {},
-      maps: {}
-    }
-  },
-  mounted() {
-    this.files.forEach(item => {
-      this.maps[item.url] = item.url
-      this.myFiles.push(item.url)
-    })
-    if (this.form) {
-      this.maps[this.form[this.formItemName]] = this.form[this.formItemName]
-      this.myFiles.push(this.form[this.formItemName])
+      myFiles: []
     }
   },
   methods: {
+    // 监听上传成功
     handleSuccessFile(response, file, fileList) {
-      this.maps[file.name] = response.data
-      this.mapFileInfoMaps[file.name] = response.data
-      this.myFiles.push(response.data)
-      this.myFileInfos.push({
-        name: file.name,
-        url: response.data
-      })
-      if (this.upList) this.upList(this.myFiles, this.myFileInfos)
-      if (this.form) {
-        this.form[this.formItemName] = response.data
-      }
+      this.myFiles.push({ name: file.name, url: response.data })
+      this.$message.success('上传成功!!!')
+      this.$emit('returnFileList', this.myFiles)
     },
     // 监听上传失败
     handleErrorFile(e, file, fileList) {
@@ -85,28 +60,29 @@ export default {
         duration: 2500
       })
     },
+    // 监听移除文件
     beforeRemoveFile(file, fileList) {
       if (file.name !== undefined) {
         this.myFiles.forEach((item, index) => {
-          if (this.maps[file.name] === item) {
-            this.$delete(this.myFiles, index)
-            this.$delete(this.myFileInfos, index)
-            if (this.upList) this.upList(this.myFiles, this.myFileInfos)
+          if (file.name === item.name) {
+            this.myFiles.splice(index, 1)
+            this.$emit('returnFileList', this.myFiles)
           }
         })
       }
     },
+    // 上传文件数量限制
     handleExceedFile(files, fileList) {
       return this.$message.warning(`当前限制选择文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
+    // 上传文件前事件 用来校验了 可校验文件格式
     beforeAvatarUpload(file) {
-      const isLt10M = file.size / 1024 / 1024 < this.maxsize
-      if (!isLt10M) {
-        this.$message.error(`上传文件大小不能超过 ${this.maxsize}!`)
+      // todo 校验文件格式
+      const isMaxSize = file.size / 1024 / 1024 < this.maxSize
+      if (!isMaxSize) {
+        this.$message.error(`上传文件大小不能超过 ${this.maxSize}!`)
       }
-      return isLt10M
-    },
-    handleChange(file, fileList) {
+      return isMaxSize
     }
   }
 }

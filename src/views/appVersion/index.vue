@@ -271,6 +271,7 @@ export default {
       this.apkFiles = []
       return true
     },
+    // 监听上传成功
     handleSuccessWgtFile(response, file, fileList) {
       this.wgtFiles = []
       this.wgtFiles.push({ name: file.name, url: response.data })
@@ -292,10 +293,11 @@ export default {
         duration: 2500
       })
     },
+    // 监听移除文件
     beforeRemoveWgtFile(file, fileList) {
       if (file.name !== undefined) {
         this.wgtFiles.forEach((item, index) => {
-          if (this.wgtFiles[index].name === item.url) {
+          if (file.name === item.name) {
             this.wgtFiles.splice(index, 1)
             if (this.form.wgtUrl === item.url) {
               this.form.wgtUrl = null
@@ -307,7 +309,7 @@ export default {
     beforeRemoveApkFile(file, fileList) {
       if (file.name !== undefined) {
         this.apkFiles.forEach((item, index) => {
-          if (this.apkFiles[index].name === item.url) {
+          if (file.name === item.name) {
             this.apkFiles.splice(index, 1)
             if (this.form.apkUrl === item.url) {
               this.form.apkUrl = null
@@ -316,9 +318,11 @@ export default {
         })
       }
     },
+    // 上传文件数量限制
     handleExceedFile(files, fileList) {
       return this.$message.warning(`当前限制选择文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
+    // 上传文件前事件 可校验文件格式/大小
     beforeAvatarUpload(file) {
     }
   }

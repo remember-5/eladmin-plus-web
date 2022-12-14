@@ -1,5 +1,4 @@
 <template>
-
   <div style="margin: 50px">
     <div>
       <div style="margin-bottom: 20px">
@@ -30,8 +29,8 @@
           <div slot="tip" class="el-upload__tip">只能上传1个文件，且不超过{{ maxsize }}MB</div>
         </el-upload>
       </div>
-      <el-row v-for="item in myFiles" :key="item">
-        <div>{{ item }}</div>
+      <el-row v-for="(item, index) in myFiles" :key="index">
+        <div>{{ item.url }}</div>
       </el-row>
     </div>
     <div>
@@ -42,14 +41,13 @@
         <span><b style="font-size: 20px">随机命名</b>上传文件</span>
       </div>
       <div>
-        <my-file-upload :maxsize="maxSize" :up-list="updateFiles" />
+        <my-file-upload :max-size="maxSize" :file-length="fileLength" @returnFileList="returnFileList" />
       </div>
-      <el-row v-for="item in fileUrls" :key="item">
-        <div>{{ item }}</div>
+      <el-row v-for="(item, index) in fileUrls" :key="index">
+        <div>{{ item.url }}</div>
       </el-row>
     </div>
   </div>
-
 </template>
 
 <script>
@@ -63,26 +61,20 @@ export default {
       maxsize: 10,
       headers: { 'Authorization': getToken() },
       myFiles: [],
-      myFileInfos: [],
-      mapFileInfoMaps: {},
-      maps: {},
       fileUrls: [],
-      maxSize: 10
+      maxSize: 10,
+      fileLength: 1
     }
   },
   methods: {
+    // 上传组件返回文件列表
+    returnFileList(fileList) {
+      this.fileUrls = fileList
+    },
+    // 监听上传成功
     handleSuccessFile(response, file, fileList) {
-      this.maps[file.name] = response.data
-      this.mapFileInfoMaps[file.name] = response.data
-      this.myFiles.push(response.data)
-      this.myFileInfos.push({
-        name: this.fileData.fileName,
-        url: response.data
-      })
-      if (this.upList) this.upList(this.myFiles, this.myFileInfos)
-      if (this.form) {
-        this.form[this.formItemName] = response.data
-      }
+      this.myFiles.push({ name: file.name, url: response.data })
+      this.$message.success('上传成功!!!')
     },
     // 监听上传失败
     handleErrorFile(e, file, fileList) {
@@ -93,20 +85,21 @@ export default {
         duration: 2500
       })
     },
+    // 监听移除文件
     beforeRemoveFile(file, fileList) {
       if (file.name !== undefined) {
         this.myFiles.forEach((item, index) => {
-          if (this.maps[file.name] === item) {
-            this.$delete(this.myFiles, index)
-            this.$delete(this.myFileInfos, index)
-            if (this.upList) this.upList(this.myFiles, this.myFileInfos)
+          if (file.name === item.name) {
+            this.myFiles.splice(index, 1)
           }
         })
       }
     },
+    // 上传文件数量限制
     handleExceedFile(files, fileList) {
       return this.$message.warning(`当前限制选择文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`)
     },
+    // 上传文件前事件 用来校验了
     beforeAvatarUpload(file) {
       if (!this.fileData.fileName) {
         this.$notify({
@@ -122,15 +115,10 @@ export default {
       }
       return isLt10M
     },
+    // 清空文件列表按钮
     clean() {
       this.myFiles = []
-      this.myFileInfos = []
-      this.mapFileInfoMaps = {}
-      this.maps = {}
       this.fileData.fileName = null
-    },
-    updateFiles(files) {
-      this.fileUrls = files
     }
   }
 }
