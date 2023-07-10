@@ -196,11 +196,11 @@
                 <el-radio-button label="false">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="前端路径" prop="path">
+            <el-form-item label="前端项目路径" prop="path">
               <el-input v-model="form.path" style="width: 40%" />
-              <span style="color: #C0C0C0;margin-left: 10px;">输入views文件夹下的目录，不存在即创建</span>
+              <span style="color: #C0C0C0;margin-left: 10px;">输入前端项路径,自动创建目录和文件,页面在[src/views]下,接口在[src/api]下</span>
             </el-form-item>
-            <!--            <el-form-item label="接口目录">-->
+            <!--            <el-form-item label="Api接口目录">-->
             <!--              <el-input v-model="form.apiPath" style="width: 40%" />-->
             <!--              <span style="color: #C0C0C0;margin-left: 10px;">Api存放路径[src/api]，为空则自动生成路径</span>-->
             <!--            </el-form-item>-->
@@ -209,7 +209,7 @@
               <span style="color: #C0C0C0;margin-left: 10px;">默认去除表前缀t_，可自定义</span>
             </el-form-item>
             <el-form-item label="生成菜单" prop="autoGenerateMenu">
-              <el-radio-group :key="form.autoGenerateMenu" v-model="form.autoGenerateMenu" size="mini" style="width: 40%">
+              <el-radio-group :key="form.autoGenerateMenu" v-model="form.autoGenerateMenu" size="mini" style="width: 40%" @input="generateMenuRadioBtn">
                 <el-radio-button label="true">是</el-radio-button>
                 <el-radio-button label="false">否</el-radio-button>
               </el-radio-group>
@@ -251,6 +251,7 @@ import crud from '@/mixins/crud'
 import { update, get, modules, _package } from '@/api/generator/genConfig'
 import { save, sync, generator } from '@/api/generator/generator'
 import { getDicts } from '@/api/system/dict'
+import { removePrefix, toCamelCase } from '@/utils'
 export default {
   name: 'GeneratorConfig',
   components: {},
@@ -425,6 +426,18 @@ export default {
     packageFilterNode(value, data) {
       if (!value) return true
       return data.value.indexOf(value) !== -1
+    },
+    generateMenuRadioBtn(value) {
+      const _modulesName = toCamelCase(removePrefix(this.tableName, this.form.prefix))
+      if (value === 'true') {
+        this.form.menuHeadline = this.form.menuHeadline || this.$route.query.remake || ''
+        this.form.routingAddress = this.form.routingAddress || _modulesName || ''
+        this.form.componentPath = this.form.componentPath || _modulesName || ''
+      } else {
+        this.form.menuHeadline = ''
+        this.form.routingAddress = ''
+        this.form.componentPath = ''
+      }
     }
   }
 }

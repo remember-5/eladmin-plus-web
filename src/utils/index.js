@@ -386,3 +386,35 @@ export function downloadFile(obj, name, suffix) {
   link.click()
   document.body.removeChild(link)
 }
+
+/**
+ * my-string-example => myStringExample
+ * @param str
+ * @returns {*}
+ */
+export function toCamelCase(str) {
+  return str.replace(/[-_](.)/g, (_, char) => char.toUpperCase())
+}
+
+/**
+ * my-string-example => MyStringExample
+ * @param str
+ * @returns {string}
+ */
+export function toPascalCase(str) {
+  const camelCaseStr = toCamelCase(str)
+  return camelCaseStr.charAt(0).toUpperCase() + camelCaseStr.slice(1)
+}
+
+/**
+ *   removePrefix("HelloWorld", "Hello"); => 输出：World
+ * @param str
+ * @param prefix
+ * @returns {*|string}
+ */
+export function removePrefix(str, prefix) {
+  if (str.startsWith(prefix)) {
+    return str.substring(prefix.length)
+  }
+  return str
+}
