@@ -154,18 +154,37 @@
               @click="doSubmit"
             >保存</el-button>
           </div>
-          <el-form ref="form" :model="form" :rules="rules" size="small" label-width="78px">
+          <el-form ref="form" :model="form" :rules="rules" size="small" label-width="120px">
             <el-form-item label="作者名称" prop="author">
-              <el-input v-model="form.author" style="width: 40%" />
+              <el-input v-model="form.author" style="width: 40%" placeholder="wangjiahao" />
               <span style="color: #C0C0C0;margin-left: 10px;">类上面的作者名称</span>
             </el-form-item>
             <el-form-item label="模块名称" prop="moduleName">
-              <el-input v-model="form.moduleName" style="width: 40%" />
+              <el-select v-model="form.moduleName" placeholder="请选择模块" style="width: 40%" @change="changeModule">
+                <el-option
+                  v-for="item in modulesOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+              <!--              <el-input v-model="form.moduleName" style="width: 40%" placeholder="eladmin-system" />-->
               <span style="color: #C0C0C0;margin-left: 10px;">模块的名称，请选择项目中已存在的模块</span>
             </el-form-item>
             <el-form-item label="至于包下" prop="pack">
-              <el-input v-model="form.pack" style="width: 40%" />
-              <span style="color: #C0C0C0;margin-left: 10px;">项目包的名称，生成的代码放到哪个包里面</span>
+              <el-input v-model="form.pack" style="width: 40%" placeholder="com.remember5.system.modules.xx" />
+              <span style="color: #C0C0C0;margin-left: 10px;">项目包的名称，生成的代码放到哪个包里面(自动获取包名)</span>
+              <el-tree
+                ref="tree"
+                style="width: 40%"
+                :data="packageOptions"
+                :props="defaultPackageProps"
+                accordion
+                :highlight-current="true"
+                :filter-node-method="packageFilterNode"
+                empty-text="请选择模块后，再来选择包名"
+                @node-click="packageClick"
+              />
             </el-form-item>
             <el-form-item label="接口名称" prop="apiAlias">
               <el-input v-model="form.apiAlias" style="width: 40%" />
@@ -229,7 +248,7 @@
 
 <script>
 import crud from '@/mixins/crud'
-import { update, get } from '@/api/generator/genConfig'
+import { update, get, modules, _package } from '@/api/generator/genConfig'
 import { save, sync, generator } from '@/api/generator/generator'
 import { getDicts } from '@/api/system/dict'
 export default {
@@ -281,7 +300,18 @@ export default {
         componentPath: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ]
+      },
+      modulesOptions: [],
+      packageOptions: [],
+      defaultPackageProps: {
+        children: 'children',
+        label: 'label'
       }
+    }
+  },
+  watch: {
+    'form.pack': function(val) {
+      this.$refs.tree.filter(val)
     }
   },
   created() {
@@ -295,13 +325,30 @@ export default {
         this.form.cover = this.form.cover.toString()
         this.form.relativePath = this.form.relativePath.toString()
         this.form.adminJurisdiction = this.form.adminJurisdiction.toString()
+        if (!this.form.apiAlias) {
+          this.form.apiAlias = this.$route.query.remake
+        }
       })
       getDicts().then(data => {
         this.dicts = data
       })
+      modules().then(data => {
+        this.modulesOptions = []
+        data.forEach(e => {
+          this.modulesOptions.push({ value: e, label: e })
+        })
+      })
     })
   },
   methods: {
+    changeModule(moduleName) {
+      _package({ moduleName: moduleName }).then(data => {
+        this.packageOptions = data.children
+      })
+    },
+    packageClick(value) {
+      this.form.pack = value.value
+    },
     beforeInit() {
       this.url = 'api/generator/columns'
       const tableName = this.tableName
@@ -374,6 +421,10 @@ export default {
         this.genLoading = false
         console.log(err.response.data.message)
       })
+    },
+    packageFilterNode(value, data) {
+      if (!value) return true
+      return data.value.indexOf(value) !== -1
     }
   }
 }
