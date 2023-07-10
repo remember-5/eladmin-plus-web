@@ -173,7 +173,7 @@
             </el-form-item>
             <el-form-item label="至于包下" prop="pack">
               <el-input v-model="form.pack" style="width: 40%" placeholder="com.remember5.system.modules.xx" />
-              <span style="color: #C0C0C0;margin-left: 10px;">项目包的名称，生成的代码放到哪个包里面(自动获取包名)</span>
+              <span style="color: #C0C0C0;margin-left: 10px;">项目包的名称，生成的代码放到哪个包里面(自动获取包名),<b>会根据表名生成文件夹</b></span>
               <el-tree
                 ref="tree"
                 style="width: 40%"
@@ -205,8 +205,8 @@
             <!--              <span style="color: #C0C0C0;margin-left: 10px;">Api存放路径[src/api]，为空则自动生成路径</span>-->
             <!--            </el-form-item>-->
             <el-form-item label="去表前缀" prop="prefix">
-              <el-input v-model="form.prefix" placeholder="默认不去除表前缀" style="width: 40%" />
-              <span style="color: #C0C0C0;margin-left: 10px;">默认不去除表前缀，可自定义</span>
+              <el-input v-model="form.prefix" placeholder="默认去除表前缀t_" style="width: 40%" />
+              <span style="color: #C0C0C0;margin-left: 10px;">默认去除表前缀t_，可自定义</span>
             </el-form-item>
             <el-form-item label="生成菜单" prop="autoGenerateMenu">
               <el-radio-group :key="form.autoGenerateMenu" v-model="form.autoGenerateMenu" size="mini" style="width: 40%">
