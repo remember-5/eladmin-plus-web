@@ -174,15 +174,16 @@
             <el-form-item label="至于包下" prop="pack">
               <el-input v-model="form.pack" style="width: 40%" placeholder="com.remember5.system.modules.xx" />
               <span style="color: #C0C0C0;margin-left: 10px;">项目包的名称，生成的代码放到哪个包里面(自动获取包名),<b>会根据表名生成文件夹</b></span>
+            </el-form-item>
+            <el-form-item>
               <el-tree
                 ref="tree"
-                style="width: 40%"
+                class="pack-tree"
                 :data="packageOptions"
                 :props="defaultPackageProps"
                 accordion
                 :highlight-current="true"
-                :filter-node-method="packageFilterNode"
-                empty-text="请选择模块后，再来选择包名"
+                empty-text="请选择模块后，再选择包名"
                 @node-click="packageClick"
               />
             </el-form-item>
@@ -455,4 +456,9 @@ export default {
  ::v-deep .input-with-select .el-input-group__prepend {
     background-color: #fff;
   }
+ .pack-tree {
+    width: 40%;
+    margin-top: 10px;
+    border: 1px solid black;
+ }
 </style>
