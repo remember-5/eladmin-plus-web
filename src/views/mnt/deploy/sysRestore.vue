@@ -26,7 +26,7 @@
     <!--分页组件-->
     <el-pagination
       :total="total"
-      :current-page="page + 1"
+      :current-page="page"
       style="margin-top: 8px"
       layout="total, prev, pager, next, sizes"
       @size-change="sizeChange"
@@ -70,7 +70,6 @@ export default {
       if (this.deployId === '') {
         return false
       }
-      this.sort = 'deployDate,desc'
       this.params['deployId'] = this.deployId
       return true
     },

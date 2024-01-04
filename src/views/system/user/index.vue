@@ -57,7 +57,19 @@
             </el-select>
             <rrOperation />
           </div>
-          <crudOperation show="" :permission="permission" />
+          <crudOperation show="" :permission="permission">
+            <el-button
+              slot="right"
+              v-permission="['admin','user:add']"
+              :disabled="crud.selections.length === 0"
+              class="filter-item"
+              size="mini"
+              type="primary"
+              icon="el-icon-refresh-left"
+              @click="resetPwd(crud.selections)"
+            >重置密码
+            </el-button>
+          </crudOperation>
         </div>
         <!--表单渲染-->
         <el-dialog append-to-body :close-on-click-modal="false" :before-close="crud.cancelCU" :visible.sync="crud.status.cu > 0" :title="crud.status.title" width="570px">
@@ -139,21 +151,6 @@
             <el-button :loading="crud.status.cu === 2" type="primary" @click="crud.submitCU">确认</el-button>
           </div>
         </el-dialog>
-        <!-- 修改用户密码 -->
-        <el-dialog :visible.sync="dialog" :close-on-click-modal="false" :before-close="cancel" title="修改密码" append-to-body width="500px" @close="cancel">
-          <el-form ref="updatePwdform" :model="updatePwdform" :rules="rules" size="small" label-width="88px">
-            <el-form-item label="新密码" prop="newPass">
-              <el-input v-model="updatePwdform.newPass" type="password" auto-complete="on" style="width: 370px;" />
-            </el-form-item>
-            <el-form-item label="确认密码" prop="confirmPass">
-              <el-input v-model="updatePwdform.confirmPass" type="password" auto-complete="on" style="width: 370px;" />
-            </el-form-item>
-          </el-form>
-          <div slot="footer" class="dialog-footer">
-            <el-button type="text" @click="cancel">取消</el-button>
-            <el-button :loading="loading" type="primary" @click="doSubmit">确认</el-button>
-          </div>
-        </el-dialog>
         <!--表格渲染-->
         <el-table ref="table" v-loading="crud.loading" :data="crud.data" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
           <el-table-column :selectable="checkboxT" type="selection" width="55" />
@@ -182,7 +179,7 @@
           <el-table-column
             v-if="checkPer(['admin','user:edit','user:del'])"
             label="操作"
-            width="240"
+            width="115"
             align="center"
             fixed="right"
           >
@@ -191,8 +188,6 @@
                 :data="scope.row"
                 :permission="permission"
                 :disabled-dle="scope.row.id === user.id"
-                @resetPwd="resetPwd"
-                @updatePwd="updatePwd"
               />
             </template>
           </el-table-column>
@@ -213,7 +208,7 @@ import { getAllJob } from '@/api/system/job'
 import CRUD, { presenter, header, form, crud } from '@crud/crud'
 import rrOperation from '@crud/RR.operation'
 import crudOperation from '@crud/CRUD.operation'
-import udOperation from './userUD.operation'
+import udOperation from '@crud/UD.operation'
 import pagination from '@crud/Pagination'
 import DateRangePicker from '@/components/DateRangePicker'
 import Treeselect from '@riophae/vue-treeselect'
@@ -243,17 +238,6 @@ export default {
         callback()
       }
     }
-    const confirmPass = (rule, value, callback) => {
-      if (value) {
-        if (this.updatePwdform.newPass !== value) {
-          callback(new Error('两次输入的密码不一致'))
-        } else {
-          callback()
-        }
-      } else {
-        callback(new Error('请再次输入密码'))
-      }
-    }
     return {
       height: document.documentElement.clientHeight - 180 + 'px;',
       deptName: '', depts: [], deptDatas: [], jobs: [], level: 3, roles: [],
@@ -262,8 +246,7 @@ export default {
       permission: {
         add: ['admin', 'user:add'],
         edit: ['admin', 'user:edit'],
-        del: ['admin', 'user:del'],
-        resetPwd: ['admin']
+        del: ['admin', 'user:del']
       },
       enabledTypeOptions: [
         { key: 'true', display_name: '激活' },
@@ -284,18 +267,8 @@ export default {
         ],
         phone: [
           { required: true, trigger: 'blur', validator: validPhone }
-        ],
-        newPass: [
-          { required: true, message: '请输入新密码', trigger: 'blur' },
-          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
-        ],
-        confirmPass: [
-          { required: true, validator: confirmPass, trigger: 'blur' }
         ]
-      },
-      loading: false,
-      dialog: false,
-      updatePwdform: { userId: null, newPass: null, confirmPass: null }
+      }
     }
   },
   computed: {
@@ -403,8 +376,7 @@ export default {
     },
     // 获取左侧部门数据
     getDeptDatas(node, resolve) {
-      const sort = 'id,desc'
-      const params = { sort: sort }
+      const params = {}
       if (typeof node !== 'object') {
         if (node) {
           params['name'] = node
@@ -511,51 +483,22 @@ export default {
     checkboxT(row, rowIndex) {
       return row.id !== this.user.id
     },
-    // 重置密码
-    resetPwd(data) {
-      this.$confirm('此操作将重置 ' + data.username + ' 的密码, 是否继续？', '提示', {
+    resetPwd(datas) {
+      this.$confirm(`你选中了 ${datas.length} 位用户，确认重置用户的密码吗?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        crudUser.resetPass(data.id).then(res => {
-          this.crud.notify('重置 ' + data.username + ' 密码成功,默认密码123456', CRUD.NOTIFICATION_TYPE.SUCCESS)
+        const ids = []
+        datas.forEach(val => {
+          ids.push(val.id)
         })
+        console.log(ids)
+        crudUser.resetPwd(ids).then(() => {
+          this.crud.notify('重置成功, 用户新密码:123456', CRUD.NOTIFICATION_TYPE.SUCCESS)
+        }).catch(() => {})
       }).catch(() => {
       })
-    },
-    // 修改密码
-    updatePwd(data) {
-      this.updatePwdform.userId = data.id
-      this.dialog = true
-    },
-    cancel() {
-      this.resetForm()
-    },
-    doSubmit() {
-      this.$refs['updatePwdform'].validate((valid) => {
-        if (valid) {
-          this.loading = true
-          crudUser.updateUserPass(this.updatePwdform).then(res => {
-            this.$notify({
-              title: '密码修改成功',
-              type: 'success',
-              duration: 1500
-            })
-            this.resetForm()
-          }).catch(err => {
-            this.loading = false
-            console.log(err.response.data.message)
-          })
-        } else {
-          return false
-        }
-      })
-    },
-    resetForm() {
-      this.dialog = false
-      this.$refs['updatePwdform'].resetFields()
-      this.updatePwdform = { userId: null, newPass: null, confirmPass: null }
     }
   }
 }

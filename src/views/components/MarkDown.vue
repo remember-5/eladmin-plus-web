@@ -11,8 +11,14 @@
 <script>
 import { upload } from '@/utils/upload'
 import { mapGetters } from 'vuex'
+import { mavonEditor } from 'mavon-editor'
+import 'mavon-editor/dist/css/index.css'
+
 export default {
   name: 'Markdown',
+  components: {
+    mavonEditor
+  },
   data() {
     return {
       height: document.documentElement.clientHeight - 200 + 'px'
@@ -43,7 +49,7 @@ export default {
 </script>
 
 <style scoped>
-.v-note-wrapper.shadow {
-  z-index: 5;
-}
+  .v-note-wrapper.shadow {
+    z-index: 5;
+  }
 </style>

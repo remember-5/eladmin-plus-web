@@ -94,7 +94,6 @@ import Screenfull from '@/components/Screenfull'
 import SizeSelect from '@/components/SizeSelect'
 import Search from '@/components/HeaderSearch'
 import Avatar from '@/assets/images/avatar.png'
-import crudMessage from '@/api/messageNotification'
 import { getToken } from '@/utils/auth'
 
 export default {
@@ -223,9 +222,9 @@ export default {
       })
     },
     getMessage() {
-      crudMessage.getMessage().then((data) => {
-        this.MessageData = data
-      })
+      // crudMessage.getMessage().then((data) => {
+      //   this.MessageData = data
+      // })
     }
   }
 }

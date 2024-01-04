@@ -17,6 +17,14 @@ export function del(ids) {
   })
 }
 
+export function resetPwd(ids) {
+  return request({
+    url: 'api/users/resetPwd',
+    method: 'put',
+    data: ids
+  })
+}
+
 export function edit(data) {
   return request({
     url: 'api/users',
@@ -57,25 +65,5 @@ export function updateEmail(form) {
   })
 }
 
-export function resetPass(data) {
-  return request({
-    url: 'api/users/resetPass',
-    method: 'post',
-    data
-  })
-}
-
-export function updateUserPass(user) {
-  const data = {
-    userId: user.userId,
-    newPass: encrypt(user.newPass)
-  }
-  return request({
-    url: 'api/users/updateUserPass',
-    method: 'post',
-    data
-  })
-}
-
-export default { add, edit, del, resetPass, updateUserPass }
+export default { add, edit, del, resetPwd }
 

@@ -31,8 +31,6 @@ function CRUD(options) {
     form: {},
     // 重置表单
     defaultForm: () => {},
-    // 排序规则，默认 id 降序， 支持多字段排序 ['id,desc', 'createTime,asc']
-    sort: ['id,desc'],
     // 等待时间
     time: 50,
     // CRUD Method
@@ -89,7 +87,7 @@ function CRUD(options) {
     },
     page: {
       // 页码
-      page: 0,
+      page: 1,
       // 每页数据条数
       size: 10,
       // 总数据条数
@@ -332,7 +330,6 @@ function CRUD(options) {
     doExport() {
       crud.downloadLoading = true
       download(crud.url + '/download', crud.getQueryParams()).then(result => {
-        console.log(result)
         downloadFile(result, crud.title + '数据', 'xlsx')
         crud.downloadLoading = false
       }).catch(() => {
@@ -364,9 +361,8 @@ function CRUD(options) {
         if (crud.params[item] === null || crud.params[item] === '') crud.params[item] = undefined
       })
       return {
-        page: crud.page.page - 1,
+        current: crud.page.page,
         size: crud.page.size,
-        sort: crud.sort,
         ...crud.query,
         ...crud.params
       }
@@ -413,10 +409,14 @@ function CRUD(options) {
      * @param {Array} data 数据
      */
     resetForm(data) {
+      delete crud.form['createTime']
+      delete crud.form['updateTime']
+      delete crud.form['createBy']
+      delete crud.form['updateBy']
       const form = data || (typeof crud.defaultForm === 'object' ? JSON.parse(JSON.stringify(crud.defaultForm)) : crud.defaultForm.apply(crud.findVM('form')))
       const crudFrom = crud.form
       for (const key in form) {
-        if (crudFrom.hasOwnProperty(key)) {
+        if (Object.prototype.hasOwnProperty.call(crudFrom, key)) {
           crudFrom[key] = form[key]
         } else {
           Vue.set(crudFrom, key, form[key])
@@ -496,6 +496,7 @@ function CRUD(options) {
     toggleRowSelection(selection, data) {
       if (data.children) {
         data.children.forEach(val => {
+          selection.splice(selection.findIndex(item => this.getDataId(item) === this.getDataId(val)), 1)
           crud.getTable().toggleRowSelection(val, false)
           if (val.children) {
             crud.toggleRowSelection(selection, val)
@@ -633,7 +634,7 @@ function mergeOptions(src, opts) {
     ...src
   }
   for (const key in src) {
-    if (opts.hasOwnProperty(key)) {
+    if (Object.prototype.hasOwnProperty.call(opts, key)) {
       optsRet[key] = opts[key]
     }
   }
