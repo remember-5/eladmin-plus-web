@@ -1,5 +1,5 @@
 <template>
-  <div class="login" :style="'background-image:url('+ Background +');'">
+  <div class="login">
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" label-position="left" label-width="0px" class="login-form">
       <h3 class="title">
         EL-ADMIN 登陆
@@ -47,12 +47,10 @@ import Config from '@/settings'
 import { getCodeImg } from '@/api/login'
 import Cookies from 'js-cookie'
 import qs from 'qs'
-import Background from '@/assets/images/background.jpg'
 export default {
   name: 'Login',
   data() {
     return {
-      Background: Background,
       codeUrl: '',
       cookiePass: '',
       loginForm: {
@@ -170,11 +168,11 @@ export default {
 <style rel="stylesheet/scss" lang="scss">
   .login {
     display: flex;
-    justify-content: right;
+    justify-content: center;
     align-items: center;
     height: 100%;
     background-size: cover;
-    padding-right: 150px;
+    background-color: #293146;
   }
   .title {
     margin: 0 auto 30px auto;
