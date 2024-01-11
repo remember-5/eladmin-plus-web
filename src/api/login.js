@@ -13,13 +13,6 @@ export function login(username, password, code, uuid) {
   })
 }
 
-export function getInfo() {
-  return request({
-    url: 'user/info',
-    method: 'get'
-  })
-}
-
 export function getCodeImg() {
   return request({
     url: 'auth/code',

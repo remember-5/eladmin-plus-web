@@ -65,5 +65,12 @@ export function updateEmail(form) {
   })
 }
 
-export default { add, edit, del, resetPwd }
+export function getInfo() {
+  return request({
+    url: '/api/users/info',
+    method: 'get'
+  })
+}
+
+export default { add, edit, del, resetPwd, getInfo }
 
