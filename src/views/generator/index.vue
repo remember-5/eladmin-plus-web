@@ -19,6 +19,15 @@
           >同步</el-button>
         </el-tooltip>
       </crudOperation>
+      <!--      数据源:-->
+      <!--      <el-select v-model="query.datasource" placeholder="请选择数据源" class="filter-item">-->
+      <!--        <el-option-->
+      <!--          v-for="item in datasourceOptions"-->
+      <!--          :key="item.value"-->
+      <!--          :label="item.label"-->
+      <!--          :value="item.value"-->
+      <!--        />-->
+      <!--      </el-select>-->
     </div>
     <!--表格渲染-->
     <el-table ref="table" v-loading="crud.loading" :data="crud.data" style="width: 100%;" @selection-change="crud.selectionChangeHandler">
@@ -66,11 +75,19 @@ export default {
   mixins: [presenter(), header()],
   data() {
     return {
-      syncLoading: false
+      syncLoading: false,
+      datasourceOptions: []
     }
   },
   created() {
     this.crud.optShow = { add: false, edit: false, del: false, download: false }
+    // datasource().then(res => {
+    //   this.datasourceOptions = []
+    //   for (const ds in res) {
+    //     this.datasourceOptions.push({ label: res[ds], value: res[ds] })
+    //   }
+    //   this.query.datasource = this.datasourceOptions[0].value
+    // })
   },
   methods: {
     toGen(tableName) {

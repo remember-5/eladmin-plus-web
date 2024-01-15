@@ -24,3 +24,10 @@ export function sync(tables) {
   })
 }
 
+export function datasource() {
+  return request({
+    url: 'api/generator/datasource',
+    method: 'get'
+  })
+}
+
