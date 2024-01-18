@@ -167,7 +167,6 @@
                 class="pack-tree"
                 :data="packageOptions"
                 :props="defaultPackageProps"
-                accordion
                 :highlight-current="true"
                 empty-text="请选择模块后，再选择包名"
                 @node-click="packageClick"
@@ -177,26 +176,16 @@
               <el-input v-model="form.apiAlias" style="width: 40%" />
               <span style="color: #C0C0C0;margin-left: 10px;">接口的名称，用于控制器与接口文档中</span>
             </el-form-item>
-            <el-form-item label="相对路径" prop="relativePath">
-              <el-radio-group :key="form.autoGenerateMenu" v-model="form.relativePath" size="mini" style="width: 40%">
-                <el-radio-button label="true">是</el-radio-button>
-                <el-radio-button label="false">否</el-radio-button>
-              </el-radio-group>
-            </el-form-item>
             <el-form-item label="前端项目路径" prop="path">
-              <el-input v-model="form.path" style="width: 40%" />
+              <el-input v-model="form.path" placeholder="/Users/xxx/xxx" style="width: 40%" />
               <span style="color: #C0C0C0;margin-left: 10px;">输入前端项路径,自动创建目录和文件,页面在[src/views]下,接口在[src/api]下</span>
             </el-form-item>
-            <!--            <el-form-item label="Api接口目录">-->
-            <!--              <el-input v-model="form.apiPath" style="width: 40%" />-->
-            <!--              <span style="color: #C0C0C0;margin-left: 10px;">Api存放路径[src/api]，为空则自动生成路径</span>-->
-            <!--            </el-form-item>-->
             <el-form-item label="去表前缀" prop="prefix">
-              <el-input v-model="form.prefix" placeholder="默认去除表前缀t_" style="width: 40%" />
-              <span style="color: #C0C0C0;margin-left: 10px;">默认去除表前缀t_，可自定义</span>
+              <el-input v-model="form.prefix" placeholder="去除表前缀" style="width: 40%" />
+              <span style="color: #C0C0C0;margin-left: 10px;">默认去除表前缀(如:t_)，可自定义</span>
             </el-form-item>
             <el-form-item label="生成菜单" prop="autoGenerateMenu">
-              <el-radio-group :key="form.autoGenerateMenu" v-model="form.autoGenerateMenu" size="mini" style="width: 40%" @input="generateMenuRadioBtn">
+              <el-radio-group v-model="form.autoGenerateMenu" size="mini" style="width: 40%" @input="generateMenuRadioBtn">
                 <el-radio-button label="true">是</el-radio-button>
                 <el-radio-button label="false">否</el-radio-button>
               </el-radio-group>
@@ -246,11 +235,12 @@ export default {
   data() {
     return {
       activeName: 'first', tableName: '', tableHeight: 550, columnLoading: false, configLoading: false, dicts: [], syncLoading: false, genLoading: false,
-      form: { id: null, tableName: '', author: '', pack: '', path: '',
-        moduleName: '', autoGenerateMenu: 'true', cover: 'false', apiPath: '',
+      form: {
+        id: null, tableName: '', author: '', pack: '', path: '',
+        moduleName: '', autoGenerateMenu: '', cover: '', apiPath: '',
         prefix: '', apiAlias: null, menuHeadline: '', routingAddress: '',
-        relativePath: '', adminJurisdiction: '',
-        componentPath: '' },
+        relativePath: '', adminJurisdiction: '', componentPath: ''
+      },
       rules: {
         author: [
           { required: true, message: '作者不能为空', trigger: 'blur' }
@@ -270,26 +260,19 @@ export default {
         cover: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ],
-        menuHeadline: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        routingAddress: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
         autoGenerateMenu: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ],
-        relativePath: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ],
         adminJurisdiction: [
           { required: true, message: '不能为空', trigger: 'blur' }
         ],
-        componentPath: [
-          { required: true, message: '不能为空', trigger: 'blur' }
-        ]
+        menuHeadline: [],
+        routingAddress: [],
+        componentPath: []
       },
+      // 模块选项
       modulesOptions: [],
+      // 包名选项
       packageOptions: [],
       defaultPackageProps: {
         children: 'children',
@@ -299,7 +282,22 @@ export default {
   },
   watch: {
     'form.pack': function(val) {
-      this.$refs.tree.filter(val)
+      try {
+        this.$refs.tree.filter(val)
+      } catch (e) {
+        // 只是为了解决错误
+      }
+    },
+    'form.autoGenerateMenu': function(newVal) {
+      if (newVal === 'true') {
+        this.$set(this.rules, 'menuHeadline', [{ required: true, message: '不能为空', trigger: 'blur' }])
+        this.$set(this.rules, 'routingAddress', [{ required: true, message: '不能为空', trigger: 'blur' }])
+        this.$set(this.rules, 'componentPath', [{ required: true, message: '不能为空', trigger: 'blur' }])
+      } else {
+        this.$set(this.rules, 'menuHeadline', [])
+        this.$set(this.rules, 'routingAddress', [])
+        this.$set(this.rules, 'componentPath', [])
+      }
     }
   },
   created() {
@@ -309,10 +307,6 @@ export default {
       this.init()
       get(this.tableName).then(data => {
         this.form = data
-        this.form.autoGenerateMenu = this.form.autoGenerateMenu.toString()
-        this.form.cover = this.form.cover.toString()
-        this.form.relativePath = this.form.relativePath.toString()
-        this.form.adminJurisdiction = this.form.adminJurisdiction.toString()
         if (!this.form.apiAlias) {
           this.form.apiAlias = this.$route.query.remake
         }
@@ -371,10 +365,6 @@ export default {
           update(this.form).then(res => {
             this.notify('保存成功', 'success')
             this.form = res
-            this.form.cover = this.form.cover.toString()
-            this.form.relativePath = this.form.relativePath.toString()
-            this.form.adminJurisdiction = this.form.adminJurisdiction.toString()
-            this.form.autoGenerateMenu = this.form.autoGenerateMenu.toString()
             this.configLoading = false
           }).catch(err => {
             this.configLoading = false
