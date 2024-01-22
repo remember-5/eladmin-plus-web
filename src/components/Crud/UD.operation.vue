@@ -9,6 +9,7 @@
       </div>
       <el-button slot="reference" :disabled="disabledDle" type="danger" icon="el-icon-delete" size="mini" @click.stop="toDelete" />
     </el-popover>
+    <slot name="extend-btn" />
   </div>
 </template>
 <script>
