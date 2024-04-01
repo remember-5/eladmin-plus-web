@@ -190,19 +190,19 @@
                 <el-radio-button label="false">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
-            <el-form-item v-if="form.autoGenerateMenu === 'true'" label="菜单标题" prop="menuHeadline">
+            <el-form-item v-if="form.autoGenerateMenu === true" label="菜单标题" prop="menuHeadline">
               <el-input v-model="form.menuHeadline" placeholder="目录使用反斜杠分割" style="width: 40%" />
               <span style="color: #C0C0C0;margin-left: 10px;">目录使用反斜杠分割，一级目录/二级目录/菜单 ,最后一个为菜单,以最后一个有效目录为准（如果如果第一个不存在，第二个存在，则第一个会创建，菜单会放到第二个下面）</span>
             </el-form-item>
-            <el-form-item v-if="form.autoGenerateMenu === 'true'" label="路由地址" prop="routingAddress">
+            <el-form-item v-if="form.autoGenerateMenu === true" label="路由地址" prop="routingAddress">
               <el-input v-model="form.routingAddress" placeholder="和菜单标题保持一致" style="width: 40%" />
               <span style="color: #C0C0C0;margin-left: 10px;">和菜单标题保持一致，1lv/2lv/menu ,上级菜单没有时需要保证一一对应</span>
             </el-form-item>
-            <el-form-item v-if="form.autoGenerateMenu === 'true'" label="组件相对路径" prop="componentPath">
+            <el-form-item v-if="form.autoGenerateMenu === true" label="组件相对路径" prop="componentPath">
               <el-input v-model="form.componentPath" placeholder="views文件夹下的目录需要带index" style="width: 40%" />
               <span style="color: #C0C0C0;margin-left: 10px;" />
             </el-form-item>
-            <el-form-item v-if="form.autoGenerateMenu === 'true'" label="管理员权限" prop="adminJurisdiction">
+            <el-form-item v-if="form.autoGenerateMenu === true" label="管理员权限" prop="adminJurisdiction">
               <el-radio-group v-model="form.adminJurisdiction" size="mini" style="width: 40%">
                 <el-radio-button label="true">是</el-radio-button>
                 <el-radio-button label="false">否</el-radio-button>
