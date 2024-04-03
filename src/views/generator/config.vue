@@ -186,8 +186,8 @@
             </el-form-item>
             <el-form-item label="生成菜单" prop="autoGenerateMenu">
               <el-radio-group v-model="form.autoGenerateMenu" size="mini" style="width: 40%" @input="generateMenuRadioBtn">
-                <el-radio-button label="true">是</el-radio-button>
-                <el-radio-button label="false">否</el-radio-button>
+                <el-radio-button :label="true">是</el-radio-button>
+                <el-radio-button :label="false">否</el-radio-button>
               </el-radio-group>
             </el-form-item>
             <el-form-item v-if="form.autoGenerateMenu === true" label="菜单标题" prop="menuHeadline">
@@ -237,7 +237,7 @@ export default {
       activeName: 'first', tableName: '', tableHeight: 550, columnLoading: false, configLoading: false, dicts: [], syncLoading: false, genLoading: false,
       form: {
         id: null, tableName: '', author: '', pack: '', path: '',
-        moduleName: '', autoGenerateMenu: '', cover: '', apiPath: '',
+        moduleName: '', autoGenerateMenu: false, cover: '', apiPath: '',
         prefix: '', apiAlias: null, menuHeadline: '', routingAddress: '',
         relativePath: '', adminJurisdiction: '', componentPath: ''
       },
@@ -289,7 +289,7 @@ export default {
       }
     },
     'form.autoGenerateMenu': function(newVal) {
-      if (newVal === 'true') {
+      if (newVal === true) {
         this.$set(this.rules, 'menuHeadline', [{ required: true, message: '不能为空', trigger: 'blur' }])
         this.$set(this.rules, 'routingAddress', [{ required: true, message: '不能为空', trigger: 'blur' }])
         this.$set(this.rules, 'componentPath', [{ required: true, message: '不能为空', trigger: 'blur' }])
